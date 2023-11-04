@@ -8,40 +8,73 @@ import { Note } from '../interfaces/note.interface';
 })
 
 export class NoteListService {
-  trashNotes: Note[] = [];
   normalNotes: Note[] = [];
-  items$;
-  items;
+  trashNotes: Note[] = [];
 
-  unsubList;
-  unsubSingle;
+  //items$;
+  //items;
+
+  unsubNotes;
+  unsubTrash;
 
   firestore: Firestore = inject(Firestore);
 
   constructor() {
+    this.unsubNotes = this.subNotesList();
+    this.unsubTrash = this.subTrashList();
 
-    this.unsubList.onSnapshot(this.getNotesRef(), (list) => {
-      list.forEach(list => {
-        console.log(list);
-      });
-    });
+  }
 
-    this.unsubSingle.onSnapshot(this.getSingleDocRef('notes', 'FcpnKNXmUcCWUPpx8U6U'), (element) => {
+
+/*     this.unsubSingle = onSnapshot(this.getSingleDocRef('notes', 'FcpnKNXmUcCWUPpx8U6U'), (element) => {
       console.log(element);
     });
     this.unsubList();
-    this.unsubSingle();
+    this.unsubSingle(); */
 
 
-
-    this.items$ = collectionData(this.getNotesRef());
+/*   this.items$ = collectionData(this.getNotesRef());
     // Ein Dollar Zeichen am Ende der Variblen heisst, dass dies observable ist, es wird auf jede änderung gehört
     this.items = this.items$.subscribe( (list) => {
       list.forEach(element => {
         console.log(element);
       });
     });
-    this.items.unsubscribe();
+    this.items.unsubscribe(); 
+ }
+ */
+
+  ngOnDestroy() {
+    this.unsubNotes();
+    this.unsubTrash();
+  }
+
+  subNotesList(){
+    return onSnapshot(this.getNotesRef(), (list) => {
+      this.normalNotes = [];
+      list.forEach(element => {
+        this.normalNotes.push(this.setNoteObject(element.data(), element.id));
+      });
+    });
+  }
+
+  subTrashList(){
+    return onSnapshot(this.getTrashRef(), (list) => {
+      this.trashNotes = [];
+      list.forEach(element => {
+        this.trashNotes.push(this.setNoteObject(element.data(), element.id));
+      });
+    });
+  }
+
+  setNoteObject(obj: any, id: string): Note {
+    return {
+      id: id,
+      type: obj.type || "note",
+      title: obj.title || "",
+      content: obj.content || "",
+      marked: obj.marked || false
+    }
   }
   
   getNotesRef(){

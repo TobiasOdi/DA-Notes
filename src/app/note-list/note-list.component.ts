@@ -13,7 +13,15 @@ export class NoteListComponent {
   status: "notes" | "trash" = "notes";
 
   constructor(private noteService: NoteListService) {
-    this.noteList = this.getDummyData()
+    //this.noteList = this.getDummyData()
+  }
+
+  getList(): Note[] {
+    if(this.status == 'trash') {
+      return this.noteService.trashNotes;
+    } else {
+      return this.noteService.normalNotes;
+    }
   }
 
   changeFavFilter(filter:"all" | "fav"){
@@ -30,9 +38,7 @@ export class NoteListComponent {
   }
 
 
-
-
-  getDummyData(): Note[] {
+/*   getDummyData(): Note[] {
     return [
       {
         id: "21sasd561dd4sdf",
@@ -69,6 +75,6 @@ export class NoteListComponent {
         marked: true,
       }
     ];
-  }
+  } */
 
 }
