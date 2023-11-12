@@ -28,18 +28,36 @@ export class NoteListService {
   }
 
   async addNote(item: Note, colId: "notes" | "trash") {
-    if(colId == "notes") {
-      await addDoc(this.getNotesRef(), item).catch(
-        (err) => {console.error(err)}
-      ).then(
-        (docRef) => {console.log('Document written with ID: ', docRef?.id)}
-      )
+    if(item.id) {
+       if(colId == "notes") {
+        await addDoc(this.getNotesRef(), item).catch(
+          (err) => {console.error(err)}
+        ).then(
+          (docRef) => {console.log('Document written with ID: ', docRef?.id)}
+        )
+      } else {
+        await addDoc(this.getTrashRef(), item).catch(
+          (err) => {console.error(err)}
+        ).then(
+          (docRef) => {console.log('Document written with ID: ', docRef?.id)}
+        )
+      }
     } else {
-      await addDoc(this.getTrashRef(), item).catch(
-        (err) => {console.error(err)}
-      ).then(
-        (docRef) => {console.log('Document written with ID: ', docRef?.id)}
-      )
+      item.id = Math.floor(Math.random() * 1000000).toString();
+      if(colId == "notes") {
+        await addDoc(this.getNotesRef(), item).catch(
+          (err) => {console.error(err)}
+        ).then(
+          (docRef) => {console.log('Document written with ID: ', docRef?.id)}
+        )
+      } else {
+        await addDoc(this.getTrashRef(), item).catch(
+          (err) => {console.error(err)}
+        ).then(
+          (docRef) => {console.log('Document written with ID: ', docRef?.id)}
+        )
+      }
+  
     }
   };
 
